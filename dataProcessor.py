@@ -7,6 +7,7 @@ from pyspark import SparkConf
 from pyspark import SparkContext
 from datetime import datetime
 import uuid
+import random
 from pyspark.sql.types import * 
 from pyspark_cassandra import CassandraSparkContext
 
@@ -27,7 +28,8 @@ if __name__ == "__main__":
        tweets.registerTempTable('tweets')
 
        temp = tweets.map(lambda row: {    'text': row.text,
-                                          'recordid': str(uuid.uuid1())}).collect()
+                                          'recordid': str(uuid.uuid1()),
+                                          'emotion': 'negative' if random.randrange(0,2) == 0 else 'positive' }).collect()
                                         #'state': row.STATE}).collect()
                                         #'lat': row.LAT,
                                         #'lon': row.LON,
