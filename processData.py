@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-import sys
+import sys, timeit
 
 from pyspark.sql import SQLContext 
 from pyspark import SparkConf
@@ -12,6 +12,7 @@ from pyspark.sql.types import *
 from pyspark_cassandra import CassandraSparkContext
 
 if __name__ == "__main__":
+    begin = timeit.default_timer()
     if len(sys.argv) < 2:
         print("Usage: station.py <file>", file=sys.stderr)
         exit(-1)
@@ -39,3 +40,6 @@ if __name__ == "__main__":
                                         #'elev': row.ELEV}).collect() 
 
        sc.parallelize(temp).saveToCassandra(keyspace='project', table='tweets')
+    end = timeit.default_timer()
+    print("Total Process Time = %f seconds" % (end - begin), file=sys.stderr)
+    
