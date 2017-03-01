@@ -17,7 +17,7 @@ if __name__ == "__main__":
         print("Usage: station.py <file>", file=sys.stderr)
         exit(-1)
 
-    conf = SparkConf().setAppName("Twitter Sentiment")
+    conf = SparkConf().setAppName("Twitter Sentiment Nodes: 3 smalldata")
     sc = CassandraSparkContext(conf=conf) 
     sqlContext = SQLContext(sc)
     
