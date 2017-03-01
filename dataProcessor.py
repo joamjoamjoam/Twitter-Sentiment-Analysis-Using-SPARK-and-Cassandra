@@ -33,7 +33,7 @@ if __name__ == "__main__":
                                           'longitude': str(row.location[0][0][1]) if row.location is not None else 0.00,
                                           'lattitude': str(row.location[0][0][0]) if row.location is not None else 0.00,
                                           'emotion': 'negative' if random.randrange(0,2) == 0 else 'positive' }).collect()
-                                        #'state': row.STATE}).collect()
+                                        #'state': row.STATE}).collect() 
                                         #'lat': row.LAT,
                                         #'lon': row.LON,
                                         #'elev': row.ELEV}).collect() 
