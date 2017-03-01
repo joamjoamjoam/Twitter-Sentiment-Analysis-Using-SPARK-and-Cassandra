@@ -3,7 +3,6 @@ CREATE KEYSPACE project WITH REPLICATION = {'class':'SimpleStrategy', 'replicati
 CREATE TABLE project.tweets (
     recordid timeuuid PRIMARY KEY, 
     name varchar,
-    title varchar,
     text varchar,
     lattitude varchar,
     longitude varchar,

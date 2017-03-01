@@ -28,6 +28,7 @@ if __name__ == "__main__":
        tweets.registerTempTable('tweets')
 
        temp = tweets.map(lambda row: {    'text': row.text,
+                                          'name':row.name,
                                           'recordid': str(uuid.uuid1()),
                                           'emotion': 'negative' if random.randrange(0,2) == 0 else 'positive' }).collect()
                                         #'state': row.STATE}).collect()
