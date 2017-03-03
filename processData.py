@@ -10,6 +10,8 @@ import uuid
 import random
 from pyspark.sql.types import * 
 from pyspark_cassandra import CassandraSparkContext
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer 
+
 
 if __name__ == "__main__":
     begin = timeit.default_timer()
@@ -17,10 +19,10 @@ if __name__ == "__main__":
         print("Usage: station.py <file>", file=sys.stderr)
         exit(-1)
 
-    conf = SparkConf().setAppName("Twitter Sentiment Nodes: 3 smalldata")
+    conf = SparkConf().setAppName("Twitter Sentiment Nodes: 1 mediumdata")
     sc = CassandraSparkContext(conf=conf) 
     sqlContext = SQLContext(sc)
-    
+    analyzer = SentimentIntensityAnalyzer()
     for i in xrange(1,len(sys.argv)):
 
        tweets = sqlContext.read.json(sys.argv[i])
@@ -33,7 +35,7 @@ if __name__ == "__main__":
                                           'recordid': str(uuid.uuid1()),
                                           'longitude': str(row.location[0][0][1]) if row.location is not None else 0.00,
                                           'lattitude': str(row.location[0][0][0]) if row.location is not None else 0.00,
-                                          'emotion': 'negative' if random.randrange(0,2) == 0 else 'positive' }).collect()
+                                          'emotion': 'positive' if analyzer.polarity_scores(row.text)["compound"] > 0 else 'negative'}).collect()
                                         #'state': row.STATE}).collect() 
                                         #'lat': row.LAT,
                                         #'lon': row.LON,
