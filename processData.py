@@ -35,7 +35,7 @@ if __name__ == "__main__":
                                           'recordid': str(uuid.uuid1()),
                                           'longitude': str(row.location[0][0][1]) if row.location is not None else 0.00,
                                           'lattitude': str(row.location[0][0][0]) if row.location is not None else 0.00,
-                                          'emotion': 'positive' if analyzer.polarity_scores(row.text)["compound"] > 0 else 'negative'}).collect()
+                                          'emotion': 'positive' if analyzer.polarity_scores(row.text)["compound"] > .2 else 'negative' if analyzer.polarity_scores(row.text)["compound"] < -.2 else 'neutral'}).collect()
                                         #'state': row.STATE}).collect() 
                                         #'lat': row.LAT,
                                         #'lon': row.LON,
