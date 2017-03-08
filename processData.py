@@ -12,6 +12,19 @@ from pyspark.sql.types import *
 from pyspark_cassandra import CassandraSparkContext
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer 
 
+analyzer = SentimentIntensityAnalyzer()
+
+def setEmotion(tweettext):
+   if tweettext is not None:
+      if analyzer.polarity_scores(tweettext)["compound"] > .2:
+         return 'positive' 
+      elif analyzer.polarity_scores(tweettext)["compound"] < -.2:
+         return 'negative' 
+      else:
+         return 'neutral'
+   else:
+      return 'neutral'
+
 
 if __name__ == "__main__":
     begin = timeit.default_timer()
@@ -22,7 +35,6 @@ if __name__ == "__main__":
     conf = SparkConf().setAppName("Twitter Sentiment Nodes: 1 mediumdata")
     sc = CassandraSparkContext(conf=conf) 
     sqlContext = SQLContext(sc)
-    analyzer = SentimentIntensityAnalyzer()
     for i in xrange(1,len(sys.argv)):
 
        tweets = sqlContext.read.json(sys.argv[i])
@@ -30,12 +42,13 @@ if __name__ == "__main__":
        tweets.printSchema()
        tweets.registerTempTable('tweets')
 
-       temp = tweets.map(lambda row: {    'text': row.text,
-                                          'name':row.name,
+       temp = tweets.map(lambda row: {    'text': row.text if row.text is not None else 'no text',
+                                          'name': row.name if row.name is not None else 'no name',
                                           'recordid': str(uuid.uuid1()),
                                           'longitude': str(row.location[0][0][1]) if row.location is not None else 0.00,
-                                          'lattitude': str(row.location[0][0][0]) if row.location is not None else 0.00,
-                                          'emotion': 'positive' if analyzer.polarity_scores(row.text)["compound"] > .2 else 'negative' if analyzer.polarity_scores(row.text)["compound"] < -.2 else 'neutral'}).collect()
+                                          'latitude': str(row.location[0][0][0]) if row.location is not None else 0.00,
+                                          'date' : row.created_at if row.created_at is not None else 'invalid date',
+                                          'emotion': setEmotion(row.text)}).collect()
                                         #'state': row.STATE}).collect() 
                                         #'lat': row.LAT,
                                         #'lon': row.LON,

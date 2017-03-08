@@ -4,8 +4,9 @@ CREATE TABLE project.tweets (
     recordid timeuuid PRIMARY KEY, 
     name varchar,
     text varchar,
-    lattitude varchar,
-    longitude varchar,
+    date varchar,
+    latitude double,
+    longitude double,
     emotion varchar 
 );
 
