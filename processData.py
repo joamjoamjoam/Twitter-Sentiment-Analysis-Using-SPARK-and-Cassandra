@@ -11,7 +11,11 @@ import random
 from pyspark.sql.types import * 
 from pyspark_cassandra import CassandraSparkContext
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer 
+from geopy.geocoders import Nominatim
 
+
+
+geolocater = Nominatim()
 analyzer = SentimentIntensityAnalyzer()
 
 def setEmotion(tweettext):
@@ -24,6 +28,13 @@ def setEmotion(tweettext):
          return 'neutral'
    else:
       return 'neutral'
+
+def setLocation(latitude, longitude):
+   tmp = '{0}, {1}'.format(latitude,longitude)
+   if latitude is not None:
+      return geolocater.reverse(tmp) 
+   else:
+      return 'No Location'
 
 
 if __name__ == "__main__":
@@ -48,13 +59,15 @@ if __name__ == "__main__":
                                           'longitude': str(row.location[0][0][1]) if row.location is not None else 0.00,
                                           'latitude': str(row.location[0][0][0]) if row.location is not None else 0.00,
                                           'date' : row.created_at if row.created_at is not None else 'invalid date',
-                                          'emotion': setEmotion(row.text)}).collect()
+                                          'emotionscore': analyzer.polarity_scores(row.text)["compound"] if row.text is not None else 0.0,
+                                          'emotion': setEmotion(row.text)if row.text is not None else 'neutral'}).collect()
                                         #'state': row.STATE}).collect() 
                                         #'lat': row.LAT,
                                         #'lon': row.LON,
                                         #'elev': row.ELEV}).collect() 
 
        sc.parallelize(temp).saveToCassandra(keyspace='project', table='tweets')
+       sc.parallelize(temp).saveToCassandra(keyspace='project', table='shen')
     end = timeit.default_timer()
     print("Total Process Time = %f seconds" % (end - begin), file=sys.stderr)
     
