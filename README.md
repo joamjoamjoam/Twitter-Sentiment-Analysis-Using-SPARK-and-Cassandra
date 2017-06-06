@@ -1,2 +1,9 @@
-CS179G Group Project
+Senior Group Project in Database Design.
+
+Tecniques Used
+Apache Cassandra Clustered Database
+SPARK Data Processing
+Twitter Sentiment Analysis
+Github
+
 
